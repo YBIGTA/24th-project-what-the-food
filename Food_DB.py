@@ -162,4 +162,4 @@ while True:
         print("입력한 음식을 찾을 수 없습니다.")
 
 #Todo: 비전을 통해 도출된 음식이름이 우리 DB의 Food_Name 칼럼에 있는지 혹은 같은 음식인데 이름이 다른지 비교하여 DB를 업데이트해야함 
-
+#dasdasdas
