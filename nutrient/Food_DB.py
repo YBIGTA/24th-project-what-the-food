@@ -1,3 +1,38 @@
+
+import numpy as np
+import re
+import csv
+import pandas as pd
+
+
+#function 모음
+
+# 개인의 일일섭취 영양소 정보를 저장하는 함수
+def daily_nutrient_intake(Total_Kcal,User_Input_Gender):
+    carb_calories = Total_Kcal * 0.5
+    protein_calories = Total_Kcal * 0.3
+    fat_calories = Total_Kcal * 0.2
+
+    carb_grams = carb_calories / 4
+    protein_grams = protein_calories / 4
+    fat_grams = fat_calories / 9
+    sugar_limit = 37.5 if User_Input_Gender == 'M' else 25
+    naturium_limit = 2400
+
+    return {
+        'Fd_Protein(g)': protein_grams,
+        'Fd_Cbhyd(g)': carb_grams,
+        'Fd_Fat(g)': fat_grams,
+        'Fd_Sugar(g)': sugar_limit,
+        'Fd_Natrium(mg)': naturium_limit,
+    }
+
+# 일일섭취영양소와 사용자가 섭취한 영양소를 비교하여 경고 메시지를 출력하는 함수
+def check_nutrient_limit(daily_nutrient, User_Input_Food):
+    for nutrient, consumed in nutrient_info.items():
+        if nutrient in daily_nutrient and consumed > daily_nutrient[nutrient] and nutrient != 'Fd_kcal':
+            print(f"Warning:{User_Input_Food}섭취시 1일 섭취 권장 영양소 {nutrient}를 초과하게 됩니다.")
+
 #입력한 사용자의 신체정보를 토대로 대사량을 계산
 print("------식단관리 프로그램------")
 print("당신의 대사량(Kcal)을 계산하겠습니다.")
@@ -77,55 +112,46 @@ else:
     elif User_Input_Act_type=="4":
         Total_Kcal=Basic_Kcal*2.0
     print(f"당신의 총대사량은 {Total_Kcal:.1f}Kcal 입니다.")
-# 일일섭취 영양소 정보를 저장하는 함수
-def daily_nutrient_intake(Total_Kcal,User_Input_Gender):
-    carb_calories = Total_Kcal * 0.5
-    protein_calories = Total_Kcal * 0.3
-    fat_calories = Total_Kcal * 0.2
-
-    carb_grams = carb_calories / 4
-    protein_grams = protein_calories / 4
-    fat_grams = fat_calories / 9
-    
-    cholesterol_limit = 300
-    sugar_limit = 37.5 if User_Input_Gender == 'M' else 25
-    naturium_limit = 2400
-
-    return {
-        'Fd_Cbhyd(g)': carb_grams,
-        'Fd_Protein(g)': protein_grams,
-        'Fd_Fat(g)': fat_grams,
-        'Fd_Natrium(mg)': naturium_limit,
-        'Fd_Chole(mg)': cholesterol_limit,
-        'Fd_Sugar(g)': sugar_limit
-    }
 daily_nutrient = daily_nutrient_intake(Total_Kcal,User_Input_Gender)
 print(daily_nutrient)
 
-# 일일섭취영양소와 사용자가 섭취한 영양소를 비교하여 경고 메시지를 출력하는 함수
-def check_nutrient_limit(daily_nutrient, User_Input_Food):
-    for nutrient, consumed in nutrient_info.items():
-        if nutrient in daily_nutrient and consumed > daily_nutrient[nutrient] and nutrient != 'Fd_kcal':
-            print(f"Warning:{User_Input_Food}섭취시 1일 섭취 권장 영양소 {nutrient}를 초과하게 됩니다.")
+#Cvxpy를 이용하여 사용자가 먹은 음식의 영양소 정보를 입력받아 최적의 영양소 섭취량을 계산하는 프로그램
+def add_food_to_matrix(A, User_Input_Food):
+    # 사용자가 입력한 음식의 DataFrame
+    df_user_input = df[df['Fd_Name'] == User_Input_Food]
+
+    if not df_user_input.empty:
+        # 사용자가 입력한 음식의 영양소 정보를 A 행렬에 추가
+        nutrient_info = df_user_input[['Fd_Protein', 'Fd_cbhyd', 'Fd_fat', 'Fd_sugar', 'Fd_natrium', 'Fd_chole']].values
+        A = np.vstack([A, nutrient_info])
+    else:
+        print("입력한 음식을 찾을 수 없습니다.")
+
+    return A
+
+# 초기 A 행렬 설정
+A = np.empty((0, 6))
+
+# 사용자 입력 처리
+while True:
+    User_Input_Food = input("당신이 먹은 음식은 무엇인가요? (종료하려면 'q'를 입력하세요): ")
+    if User_Input_Food.lower() == 'q':
+        break
+
 
 #사용자가 먹은 음식의 정보를 받아서 영양소 정보를 저장하는 프로그램
-import re
-import csv
-import pandas as pd
+
 # CSV에 저장된 음식 및 영양소 정보 읽어오기
 df = pd.read_csv('Food_DB.csv', encoding='utf-8')
 # 필요한 열만 선택하여 새로운 DataFrame 생성
 df = df[[
     'Fd_Name', 
-    'Fd_represent_name', 
     'Fd_Kcal', 
     'Fd_Protein', 
     'Fd_fat', 
     'Fd_cbhyd', 
     'Fd_sugar', 
-    'Fd_natrium', 
-    'Fd_chole', 
-    '영양성분함량기준량']]
+    'Fd_natrium' ]]
 
 # 영양소 정보를 저장할 Dictionary 변수선언
 nutrient_info = {
@@ -135,8 +161,8 @@ nutrient_info = {
     'Fd_Fat(g)': 0,  # 지방
     'Fd_Sugar(g)': 0,  # 당류
     'Fd_Natrium(mg)': 0,  # 나트륨
-    'Fd_Chole(mg)': 0,  # 콜레스테롤
 }
+
 while True:
     User_Input_Food = input("당신이 먹은 음식은 무엇인가요? (종료하려면 'q'를 입력하세요): ")
     if User_Input_Food.lower() == 'q':
@@ -144,6 +170,7 @@ while True:
 
     # food_row에 사용자가 입력한 음식의 정보를 저장
     food_row = df.loc[df['Fd_Name'] == User_Input_Food]
+    A=df
 
     if not food_row.empty:
         # 딕셔너리에 음식의 영양소 정보 저장
@@ -153,13 +180,12 @@ while True:
         nutrient_info['Fd_Fat(g)'] += food_row['Fd_fat'].values[0]
         nutrient_info['Fd_Sugar(g)'] += food_row['Fd_sugar'].values[0]
         nutrient_info['Fd_Natrium(mg)'] += food_row['Fd_natrium'].values[0]
-        nutrient_info['Fd_Chole(mg)'] += food_row['Fd_chole'].values[0]
 
         # Check if the nutrient intake exceeds the daily limit
         check_nutrient_limit(daily_nutrient, User_Input_Food)
 
     else:
         print("입력한 음식을 찾을 수 없습니다.")
-
+print(A)
+print(b)
 #Todo: 비전을 통해 도출된 음식이름이 우리 DB의 Food_Name 칼럼에 있는지 혹은 같은 음식인데 이름이 다른지 비교하여 DB를 업데이트해야함 
-#dasdasdas
