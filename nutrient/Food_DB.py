@@ -173,4 +173,4 @@ print("-----------")
 for i in range(len(input_list)):
   if x.value[i][0] < 0.01:
     x.value[i][0] = 0
-  print('{0}의 권장 섭취량은 {1}g 입니다.'.format(input_list[i], x.value[i][0] * 100))
+  print('{0}의 권장 섭취량은 {1:0.0f}g 입니다.'.format(input_list[i], x.value[i][0] * 100))
