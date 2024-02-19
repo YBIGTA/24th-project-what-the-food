@@ -112,8 +112,6 @@ else:
         Total_Kcal=Basic_Kcal*2.0
     print(f"당신의 총대사량은 {Total_Kcal:.1f}Kcal 입니다.")
 daily_nutrient = daily_nutrient_intake(Total_Kcal,User_Input_Gender)
-print(daily_nutrient)
-
 
 #사용자가 먹은 음식의 정보를 받아서 영양소 정보를 저장하는 프로그램
 # CSV에 저장된 음식 및 영양소 정보 읽어오기
@@ -144,8 +142,7 @@ while True:
     User_Input_Food = input("당신이 먹은 음식은 무엇인가요? (종료하려면 'q'를 입력하세요): ")
     if User_Input_Food.lower() == 'q':
         break
-    # food_row, A에 사용자가 입력한 음식의 정보를 저장
-    print(df.loc[df['Fd_Name'] == User_Input_Food].values.tolist())
+    # food_row, A에 사용자가 입력한 음식의 정보를 저장=
     if(df.loc[df['Fd_Name'] == User_Input_Food].values.tolist() == []) :
       continue
     food_row = df.loc[df['Fd_Name'] == User_Input_Food]
@@ -161,12 +158,8 @@ while True:
         nutrient_info['Fd_Natrium(mg)'] += food_row['Fd_natrium'].values[0]
     else:
         print("입력한 음식을 찾을 수 없습니다.")
-print(A)
+
 b = np.array([Total_Kcal]+list(daily_nutrient.values()))
-
-print(food_row)
-print(b)
-
 b = b/3
 # list to numpy
 A = np.array(A).T
@@ -175,8 +168,6 @@ x = cp.Variable((len(input_list),1), nonneg=True)
 
 prob = cp.Problem(cp.Minimize((1/2)*cp.quad_form(x, A.T @ A) - b @ A @ x), [ -x <= 0 ])
 prob.solve()
-
-print(x.value)
 
 print("-----------")
 for i in range(len(input_list)):
