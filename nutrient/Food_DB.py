@@ -1,9 +1,8 @@
-
 import numpy as np
 import re
 import csv
 import pandas as pd
-
+import cvxpy as cp
 
 #function 모음
 
@@ -115,32 +114,8 @@ else:
 daily_nutrient = daily_nutrient_intake(Total_Kcal,User_Input_Gender)
 print(daily_nutrient)
 
-#Cvxpy를 이용하여 사용자가 먹은 음식의 영양소 정보를 입력받아 최적의 영양소 섭취량을 계산하는 프로그램
-def add_food_to_matrix(A, User_Input_Food):
-    # 사용자가 입력한 음식의 DataFrame
-    df_user_input = df[df['Fd_Name'] == User_Input_Food]
-
-    if not df_user_input.empty:
-        # 사용자가 입력한 음식의 영양소 정보를 A 행렬에 추가
-        nutrient_info = df_user_input[['Fd_Protein', 'Fd_cbhyd', 'Fd_fat', 'Fd_sugar', 'Fd_natrium', 'Fd_chole']].values
-        A = np.vstack([A, nutrient_info])
-    else:
-        print("입력한 음식을 찾을 수 없습니다.")
-
-    return A
-
-# 초기 A 행렬 설정
-A = np.empty((0, 6))
-
-# 사용자 입력 처리
-while True:
-    User_Input_Food = input("당신이 먹은 음식은 무엇인가요? (종료하려면 'q'를 입력하세요): ")
-    if User_Input_Food.lower() == 'q':
-        break
-
 
 #사용자가 먹은 음식의 정보를 받아서 영양소 정보를 저장하는 프로그램
-
 # CSV에 저장된 음식 및 영양소 정보 읽어오기
 df = pd.read_csv('Food_DB.csv', encoding='utf-8')
 # 필요한 열만 선택하여 새로운 DataFrame 생성
@@ -162,16 +137,20 @@ nutrient_info = {
     'Fd_Sugar(g)': 0,  # 당류
     'Fd_Natrium(mg)': 0,  # 나트륨
 }
-
+# 최적해에 사용될 A값을 저장할 변수 선언
+A=[]
+input_list = []
 while True:
     User_Input_Food = input("당신이 먹은 음식은 무엇인가요? (종료하려면 'q'를 입력하세요): ")
     if User_Input_Food.lower() == 'q':
         break
-
-    # food_row에 사용자가 입력한 음식의 정보를 저장
+    # food_row, A에 사용자가 입력한 음식의 정보를 저장
+    print(df.loc[df['Fd_Name'] == User_Input_Food].values.tolist())
+    if(df.loc[df['Fd_Name'] == User_Input_Food].values.tolist() == []) :
+      continue
     food_row = df.loc[df['Fd_Name'] == User_Input_Food]
-    A=df
-
+    A.append( df.loc[df['Fd_Name'] == User_Input_Food].values.tolist()[0][1:])
+    input_list.append(User_Input_Food)
     if not food_row.empty:
         # 딕셔너리에 음식의 영양소 정보 저장
         nutrient_info['Fd_kcal'] += food_row['Fd_Kcal'].values[0]
@@ -180,12 +159,27 @@ while True:
         nutrient_info['Fd_Fat(g)'] += food_row['Fd_fat'].values[0]
         nutrient_info['Fd_Sugar(g)'] += food_row['Fd_sugar'].values[0]
         nutrient_info['Fd_Natrium(mg)'] += food_row['Fd_natrium'].values[0]
-
-        # Check if the nutrient intake exceeds the daily limit
-        check_nutrient_limit(daily_nutrient, User_Input_Food)
-
     else:
         print("입력한 음식을 찾을 수 없습니다.")
 print(A)
+b = np.array([Total_Kcal]+list(daily_nutrient.values()))
+
+print(food_row)
 print(b)
+
+b = b/3
+# list to numpy
+A = np.array(A).T
 #Todo: 비전을 통해 도출된 음식이름이 우리 DB의 Food_Name 칼럼에 있는지 혹은 같은 음식인데 이름이 다른지 비교하여 DB를 업데이트해야함 
+x = cp.Variable((len(input_list),1), nonneg=True)
+
+prob = cp.Problem(cp.Minimize((1/2)*cp.quad_form(x, A.T @ A) - b @ A @ x), [ -x <= 0 ])
+prob.solve()
+
+print(x.value)
+
+print("-----------")
+for i in range(len(input_list)):
+  if x.value[i][0] < 0.01:
+    x.value[i][0] = 0
+  print('{0}의 권장 섭취량은 {1}g 입니다.'.format(input_list[i], x.value[i][0] * 100))
