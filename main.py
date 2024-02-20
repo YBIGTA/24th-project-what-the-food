@@ -42,9 +42,6 @@ while True:
             'Fd_sugar', 
             'Fd_natrium' ]]
 
-        # test print
-        print("before", total_kcal, daily_nutrient)
-
         # print recommended intake of each food        
         print(f'오늘 {meal+1}번째 끼의 권장 섭취량은 다음과 같습니다.')
         for i in range(len(input_list)):
@@ -60,9 +57,6 @@ while True:
             daily_nutrient['Fd_Sugar(g)'] -= x.value[i][0] * df.loc[df['Fd_Name'] == input_list[i]]['Fd_sugar'].values[0]
             daily_nutrient['Fd_Natrium(mg)'] -= x.value[i][0] * df.loc[df['Fd_Name'] == input_list[i]]['Fd_natrium'].values[0]
         
-        # test print
-        print("after", total_kcal, daily_nutrient)
-
     print("프로그램을 종료하시겠습니까? (y/n)")
     end = input()
     if end == 'y':
