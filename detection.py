@@ -18,7 +18,7 @@ def detection(image_path):
     display_image(test_image)
 
     # load model from roboflow
-    rf = Roboflow(api_key="On22bsh1BDNtkVfYZhG9")
+    rf = Roboflow(api_key="YOUR_API_KEY")
     project = rf.workspace("ybigta24thproject").project("what-the-food-9wdgr")
 
     model = project.version(4).model
