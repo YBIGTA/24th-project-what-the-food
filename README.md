@@ -7,10 +7,10 @@
 ### Dataset
 - [AI Hub 한국 이미지(음식)](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=data&dataSetSn=79)의 10개의 class, 10000장의 image
 
-![classes](./img/classes.png){: width="50%" height="50%"}
+<center><img src = "./img/classes.png" width="50%" height = "50%"></center>
 
 ### Annotation
-![annotation](./img/annotation.jpg){: width="50%" height="50%"}
+<center><img src = "./img/annotation.jpg" width="50%" height = "50%"></center>
 - Dataset의 bounding box의 상태가 좋지 않아 human annotation 진행
 
 
