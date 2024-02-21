@@ -11,6 +11,7 @@
 
 ### Annotation
 <center><img src = "./img/annotation.jpg" width="50%" height = "50%"></center>
+
 - Dataset의 bounding box의 상태가 좋지 않아 human annotation 진행
 
 
