@@ -1,4 +1,4 @@
-# What the Food
+d# What the Food
 ## Task 1 - Detect foods from image
 
 ### Backbone model
@@ -18,15 +18,16 @@
 ## Task 2 - Propose food intake
 ### Get daily nutrient intake
 
-- 이용자의 키, 몸무게, 나이, 성별을 이용해서 하루 칼로리 권장 섭취량 측정
+- 이용자의 키, 몸무게, 나이, 성별,활동계수를 이용해서 하루 칼로리 권장 섭취량 측정
 - 한국인 기준 단백질, 지방, 탄수화물, 당류, 나트륨 권장 섭취량
 
 ### Get nutrient of foods
 - [전국통합식품영양성분정보(음식)표준데이터](https://www.data.go.kr/data/15100070/standard.do)
 
 ### Propose food intake
-- 음식별 영양소와 개인별 영양소 권장 섭취량을 이용해서 음식별 섭취량을 추천
-- 최적화 알고리즘을 이용해서 추천 섭취량을 계산
+- 음식별 영양소 데이터와 개인별 영양소 권장 섭취량을 이용해서 음식별 섭취량을 추천
+- 개인별 영양소 권장 섭취량은, 칼로리별 권장 섭취량을 측정결과를 그대로 반영
+- 권장 섭취 영양소에 대한 최적화 알고리즘을 이용하여 개인별 음식 추천 섭취량을 계산
 
 
 ## 실행 방법
