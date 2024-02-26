@@ -20,10 +20,10 @@ d# What the Food
 
 - 이용자의 키, 몸무게, 나이, 성별,활동계수를 이용해서 하루 칼로리 권장 섭취량 측정
 - 기초 칼로리 계산 공식
-  ```
-  male Basic_Kcal=88.362+(13.397*User_Input_Weight)+(4.799*User_Input_Height)-(5.677*User_Input_Age)
- female Basic_Kcal=447.593+(9.247*User_Input_Weight)+(3.098*User_Input_Height)-(4.330*User_Input_Age)
-  ```
+```
+male Basic_Kcal=88.362+(13.397*User_Input_Weight)+(4.799*User_Input_Height)-(5.677*User_Input_Age)
+female Basic_Kcal=447.593+(9.247*User_Input_Weight)+(3.098*User_Input_Height)-(4.330*User_Input_Age)
+```
 - 한국인 기준 단백질, 지방, 탄수화물, 당류, 나트륨 권장 섭취량
 
 ### Get nutrient of foods
